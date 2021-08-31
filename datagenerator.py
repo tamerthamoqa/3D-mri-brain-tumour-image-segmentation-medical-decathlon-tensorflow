@@ -13,7 +13,7 @@ from tqdm import tqdm
 
 class DataGenerator(tensorflow.keras.utils.Sequence):
     def __init__(self, mri_paths, mask_paths, mri_width, mri_height, mri_depth, batch_size=1, shuffle=True,
-                 augment=False, standardization=True, num_classes=4, weighted_classes=True):
+                 augment=False, standardization=True, num_classes=4, weighted_classes=True, sample_weights=None):
         self.mri_paths = mri_paths
         self.mask_paths = mask_paths
         self.mri_width = mri_width
@@ -32,9 +32,13 @@ class DataGenerator(tensorflow.keras.utils.Sequence):
             )
         self.standardization = standardization  # Must be true for both train and val datasets
         self.num_classes = num_classes
-        self.weighted_classes = weighted_classes  # Must be only true for train and val datasets
-        if self.weighted_classes:
+        self.weighted_classes = weighted_classes  # Must be true for both train and val datasets if weighted class training is enabled
+        if self.weighted_classes and sample_weights is None:
             self.sample_weights = self.calculate_class_weights()
+        elif self.weighted_classes and sample_weights is not None:
+            # For validation set data generator, import the sample weights of the train datagenerator as the
+            #  sample_weights
+            self.sample_weights = sample_weights
         self.on_epoch_end()
 
     def check_multi_channel_mri(self):

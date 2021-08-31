@@ -16,13 +16,13 @@ from tensorflow.keras.layers import (
 )
 
 
-def unet_3d_upsampling_dropout(input_size=(240, 240, 144, 4), unet_resize_factor=2, unet_dropout_rate=0.3, num_classes=4,
+def unet_3d_upsampling_dropout(input_size=(240, 240, 160, 4), unet_resize_factor=2, unet_dropout_rate=0.3, num_classes=4,
                                binary_model=False):
     """Constructs a U-Net 3D segmentation model with Dropout layers and UpSampling3D -> Conv3D layers.
 
     Args:
         input_size: (tuple) Keras model input shape is  (batch_size, height, width, length, channels) with
-                    'channels_last', (default: (240, 240, 144, 4)). Note: depth must be a multiple of 16.
+                    'channels_last', (default: (240, 240, 160, 4)). Note: depth must be a multiple of 16.
                     Source: 'data_format' parameter documentation: https://keras.io/api/layers/convolution_layers/convolution3d/
         unet_resize_factor: (int) Resize factor of the number of filters (channels) per Convolutional layer in the U-Net
                              model (must be >= 1, such that 1 means retaining the original number of filters (channels)
@@ -89,14 +89,14 @@ def unet_3d_upsampling_dropout(input_size=(240, 240, 144, 4), unet_resize_factor
     return model
 
 
-def unet_3d_conv3dtranspose_dropout(input_size=(240, 240, 144, 4), unet_resize_factor=2, unet_dropout_rate=0.3, num_classes=4,
+def unet_3d_conv3dtranspose_dropout(input_size=(240, 240, 160, 4), unet_resize_factor=2, unet_dropout_rate=0.3, num_classes=4,
                                     binary_model=False):
     """Constructs a U-Net 3D segmentation model with Dropout layers and Conv3DTranspose layers instead of
      UpSampling3D -> Conv3D layers.
 
     Args:
         input_size: (tuple) Keras model input shape is  (batch_size, height, width, length, channels) with
-                    'channels_last', (default: (240, 240, 144, 4)). Note: depth must be a multiple of 16.
+                    'channels_last', (default: (240, 240, 160, 4)). Note: depth must be a multiple of 16.
                     Source: 'data_format' parameter documentation: https://keras.io/api/layers/convolution_layers/convolution3d/
         unet_resize_factor: (int) Resize factor of the number of filters (channels) per Convolutional layer in the U-Net
                              model (must be >= 1, such that 1 means retaining the original number of filters (channels)
@@ -163,13 +163,13 @@ def unet_3d_conv3dtranspose_dropout(input_size=(240, 240, 144, 4), unet_resize_f
     return model
 
 
-def unet_3d_upsampling_batchnormalization(input_size=(240, 240, 144, 4), unet_resize_factor=2, num_classes=4, binary_model=False):
+def unet_3d_upsampling_batchnormalization(input_size=(240, 240, 160, 4), unet_resize_factor=2, num_classes=4, binary_model=False):
     """Constructs a U-Net 3D segmentation model with BatchNormalization layers after each Conv3D layer instead of
      using Dropout layers in the expansive path and with using UpSampling3D -> Conv3D layers.
 
     Args:
         input_size: (tuple) Keras model input shape is  (batch_size, height, width, length, channels) with
-                    'channels_last', (default: (240, 240, 144, 4)). Note: depth must be a multiple of 16.
+                    'channels_last', (default: (240, 240, 160, 4)). Note: depth must be a multiple of 16.
                     Source: 'data_format' parameter documentation: https://keras.io/api/layers/convolution_layers/convolution3d/
         unet_resize_factor: (int) Resize factor of the number of filters (channels) per Convolutional layer in the U-Net
                              model (must be >= 1, such that 1 means retaining the original number of filters (channels)
@@ -256,14 +256,14 @@ def unet_3d_upsampling_batchnormalization(input_size=(240, 240, 144, 4), unet_re
     return model
 
 
-def unet_3d_conv3dtranspose_batchnormalization(input_size=(240, 240, 144, 4), unet_resize_factor=2, num_classes=4, binary_model=False):
+def unet_3d_conv3dtranspose_batchnormalization(input_size=(240, 240, 160, 4), unet_resize_factor=2, num_classes=4, binary_model=False):
     """Constructs a U-Net 3D segmentation model with BatchNormalization layers after each Conv3D layer instead of
      using Dropout layers in the expansive path and with using Conv3DTranspose layers instead of UpSampling3D -> Conv3D
      layers.
 
     Args:
         input_size: (tuple) Keras model input shape is  (batch_size, height, width, length, channels) with
-                    'channels_last', (default: (240, 240, 144, 4)). Note: depth must be a multiple of 16.
+                    'channels_last', (default: (240, 240, 160, 4)). Note: depth must be a multiple of 16.
                     Source: 'data_format' parameter documentation: https://keras.io/api/layers/convolution_layers/convolution3d/
         unet_resize_factor: (int) Resize factor of the number of filters (channels) per Convolutional layer in the U-Net
                              model (must be >= 1, such that 1 means retaining the original number of filters (channels)

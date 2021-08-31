@@ -115,12 +115,31 @@ class DataGenerator(tensorflow.keras.utils.Sequence):
 
         standardized_mri = np.zeros(mri.shape)
 
-        # Iterate over channels
-        for c in range(mri.shape[3]):
+        # Mri has channel dimension
+        if self.num_channels > 1:
+            # Iterate over channels
+            for c in range(mri.shape[3]):
+                # Iterate over the `z` depth dimension
+                for z in range(mri.shape[2]):
+                    # Get a slice of the mri at channel c and z-th dimension
+                    mri_slice = mri[:, :, z, c]
+
+                    # Subtract the mean from mri_slice
+                    centered = mri_slice - np.mean(mri_slice)
+
+                    # Divide by the standard deviation (only if it is different from zero)
+                    if np.std(centered) != 0:
+                        centered_scaled = centered / np.std(centered)
+
+                        # Update the slice of standardized mri with the centered and scaled mri
+                        standardized_mri[:, :, z, c] = centered_scaled
+
+        # Mri has no channel dimension
+        else:
             # Iterate over the `z` depth dimension
             for z in range(mri.shape[2]):
-                # Get a slice of the mri at channel c and z-th dimension
-                mri_slice = mri[:, :, z, c]
+                # Get a slice of the mri at z-th dimension
+                mri_slice = mri[:, :, z]
 
                 # Subtract the mean from mri_slice
                 centered = mri_slice - np.mean(mri_slice)
@@ -130,7 +149,7 @@ class DataGenerator(tensorflow.keras.utils.Sequence):
                     centered_scaled = centered / np.std(centered)
 
                     # Update the slice of standardized mri with the centered and scaled mri
-                    standardized_mri[:, :, z, c] = centered_scaled
+                    standardized_mri[:, :, z] = centered_scaled
 
         return standardized_mri
 
@@ -155,8 +174,18 @@ class DataGenerator(tensorflow.keras.utils.Sequence):
             mri = nib.load(mri_path).get_fdata()
             mask = nib.load(mask_path).get_fdata()
 
-            if self.num_classes > 2:  # Multiclass segmentation
+            # For single channel MRI it has to be resized to an additional channel dimension of 1 for purposes of
+            #  training with a 3D Convolutional Tensorflow model
+            if self.num_channels == 1:
+                mri = mri.reshape(mri.shape[0], mri.shape[1], mri.shape[2], 1)
+
+            # Multiclass segmentation -> use tensorflow.keras.utils.to_categotical()
+            if self.num_classes > 2:
                 mask = to_categorical(mask, num_classes=self.num_classes)
+            # Binary segmentation -> reshape to an additional 'channel' dimension of 1 for training a 3D Convolutional
+            #  Tensorflow model
+            else:
+                mask = mask.reshape(mask.shape[0], mask.shape[1], mask.shape[2], 1)
 
             # Have the same augmentation transformation operations for the MRI nifti array and its corresponding mask
             if self.augment:

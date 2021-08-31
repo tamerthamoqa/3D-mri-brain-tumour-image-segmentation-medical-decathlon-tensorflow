@@ -13,7 +13,8 @@ from tqdm import tqdm
 
 class DataGenerator(tensorflow.keras.utils.Sequence):
     def __init__(self, mri_paths, mask_paths, mri_width, mri_height, mri_depth, batch_size=1, shuffle=True,
-                 augment=False, standardization=True, num_classes=4, weighted_classes=True, sample_weights=None):
+                 num_channels=4, augment=False, standardization=True, num_classes=4, weighted_classes=True,
+                 sample_weights=None):
         self.mri_paths = mri_paths
         self.mask_paths = mask_paths
         self.mri_width = mri_width
@@ -21,7 +22,7 @@ class DataGenerator(tensorflow.keras.utils.Sequence):
         self.mri_depth = mri_depth
         self.batch_size = batch_size
         self.shuffle = shuffle
-        self.multi_channel_mri, self.mri_channels = self.check_multi_channel_mri()  # For batch generation purposes
+        self.num_channels = num_channels  # For batch generation purposes
         self.augment = augment  # Must be only true for train dataset
         if self.augment:
             self.transform = A.Compose(
@@ -40,18 +41,6 @@ class DataGenerator(tensorflow.keras.utils.Sequence):
             #  sample_weights
             self.sample_weights = sample_weights
         self.on_epoch_end()
-
-    def check_multi_channel_mri(self):
-        """For purposes of batch generation:
-
-        Checks whether the mri file has more than one channel and returns a boolean value accordingly and the number of
-         channels.
-        """
-        mri = nib.load(self.mri_paths[0]).get_fdata()
-        if len(mri.shape) == 4:  # Mri has multiple channels
-            return True, mri.shape[3]
-        else:
-            return False, 0
 
     def calculate_class_weights(self):
         """Used this blog post as a reference:
@@ -149,19 +138,24 @@ class DataGenerator(tensorflow.keras.utils.Sequence):
         #  Casting masks as np.int types yields the following exception by Tensorflow so the masks are casted
         #   to np.float32 instead:
         #       TypeError: Input 'y' of 'Mul' Op has type float32 that does not match type int32 of argument 'x'
-        if self.multi_channel_mri:
-            mris = np.empty((self.batch_size, self.mri_height, self.mri_width, self.mri_depth, self.mri_channels), dtype=np.float32)
+        if self.num_channels > 1:
+            mris = np.empty((self.batch_size, self.mri_height, self.mri_width, self.mri_depth, self.num_channels), dtype=np.float32)
         else:
             # There has to be an extra channel dimension of one specified even for single channel mri files for
             # input to a 3D convolutional Tensorflow model
             mris = np.empty((self.batch_size, self.mri_height, self.mri_width, self.mri_depth, 1), dtype=np.float32)
 
-        masks = np.empty((self.batch_size, self.mri_height, self.mri_width, self.mri_depth, self.num_classes),  dtype=np.float32)
+        if self.num_classes > 2:  # Multiclass segmentation
+            masks = np.empty((self.batch_size, self.mri_height, self.mri_width, self.mri_depth, self.num_classes),  dtype=np.float32)
+        else:  # Binary segmentation
+            masks = np.empty((self.batch_size, self.mri_height, self.mri_width, self.mri_depth, 1),  dtype=np.float32)
 
         for i, (mri_path, mask_path) in enumerate(zip(mri_paths, mask_paths)):
             mri = nib.load(mri_path).get_fdata().astype(np.float32)
             mask = nib.load(mask_path).get_fdata().astype(np.uint8)
-            mask = to_categorical(mask, num_classes=self.num_classes)
+
+            if self.num_classes > 2:  # Multiclass segmentation
+                mask = to_categorical(mask, num_classes=self.num_classes)
 
             # Have the same augmentation transformation operations for the MRI nifti array and its corresponding mask
             if self.augment:

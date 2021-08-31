@@ -71,7 +71,8 @@ class DataGenerator(tensorflow.keras.utils.Sequence):
             sample_weights[i] = n_samples_total / (self.num_classes * n_samples[i])
 
         print("\n" + str(sample_weights) + "\n")
-        return sample_weights
+
+        return np.array(sample_weights).astype(np.float32)  # Must return a numpy array
 
     def on_epoch_end(self):
         """Updates indexes after each epoch."""
@@ -151,8 +152,8 @@ class DataGenerator(tensorflow.keras.utils.Sequence):
             masks = np.empty((self.batch_size, self.mri_height, self.mri_width, self.mri_depth, 1),  dtype=np.float32)
 
         for i, (mri_path, mask_path) in enumerate(zip(mri_paths, mask_paths)):
-            mri = nib.load(mri_path).get_fdata().astype(np.float32)
-            mask = nib.load(mask_path).get_fdata().astype(np.uint8)
+            mri = nib.load(mri_path).get_fdata()
+            mask = nib.load(mask_path).get_fdata()
 
             if self.num_classes > 2:  # Multiclass segmentation
                 mask = to_categorical(mask, num_classes=self.num_classes)

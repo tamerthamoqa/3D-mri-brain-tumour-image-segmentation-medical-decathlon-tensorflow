@@ -78,10 +78,7 @@ def split_chunks_and_save_as_separate_files(input_directory_images, input_direct
                     output_filename_path = os.path.join(output_directory_images, filename)
 
                     # Numpy array has to be set as Nifti Image object before saving
-                    if len(mri.shape) >= 4:
-                        nib.save(nib.Nifti1Image(mri, np.eye(4)), output_filename_path)
-                    else:
-                        nib.save(nib.Nifti1Image(mri, np.eye(4)), output_filename_path)
+                    nib.save(nib.Nifti1Image(mri, np.eye(4)), output_filename_path)
                     print(output_filename_path)
 
                 # Case 2: Original file has more layers than the desired layers

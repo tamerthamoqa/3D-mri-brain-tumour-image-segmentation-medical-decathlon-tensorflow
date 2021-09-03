@@ -115,31 +115,12 @@ class DataGenerator(tensorflow.keras.utils.Sequence):
 
         standardized_mri = np.zeros(mri.shape)
 
-        # Mri has channel dimension
-        if self.num_channels > 1:
-            # Iterate over channels
-            for c in range(mri.shape[3]):
-                # Iterate over the `z` depth dimension
-                for z in range(mri.shape[2]):
-                    # Get a slice of the mri at channel c and z-th dimension
-                    mri_slice = mri[:, :, z, c]
-
-                    # Subtract the mean from mri_slice
-                    centered = mri_slice - np.mean(mri_slice)
-
-                    # Divide by the standard deviation (only if it is different from zero)
-                    if np.std(centered) != 0:
-                        centered_scaled = centered / np.std(centered)
-
-                        # Update the slice of standardized mri with the centered and scaled mri
-                        standardized_mri[:, :, z, c] = centered_scaled
-
-        # Mri has no channel dimension
-        else:
+        # Iterate over channels
+        for c in range(mri.shape[3]):
             # Iterate over the `z` depth dimension
             for z in range(mri.shape[2]):
-                # Get a slice of the mri at z-th dimension
-                mri_slice = mri[:, :, z]
+                # Get a slice of the mri at channel c and z-th dimension
+                mri_slice = mri[:, :, z, c]
 
                 # Subtract the mean from mri_slice
                 centered = mri_slice - np.mean(mri_slice)
@@ -149,7 +130,7 @@ class DataGenerator(tensorflow.keras.utils.Sequence):
                     centered_scaled = centered / np.std(centered)
 
                     # Update the slice of standardized mri with the centered and scaled mri
-                    standardized_mri[:, :, z] = centered_scaled
+                    standardized_mri[:, :, z, c] = centered_scaled
 
         return standardized_mri
 

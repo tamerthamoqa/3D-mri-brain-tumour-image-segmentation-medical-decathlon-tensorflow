@@ -7,7 +7,7 @@ changed between tasks, but they can be found automatically through cross-validat
 be terminated".
 
 Although I have explored the datasets' height, width, and depth statistics per each task in the 'misc/datasets_exploration_and_visualization' folder; I have manually set the model
-input shapes as according to my judgement since I was also testing how much I could squeeze inside the TITAN RTX GPU's 24 gigabytes of Video RAM memory for the purposes of 3D Image
+input shapes as according to my judgement since the 3D U-Net model needed input depth size that is a multiple of 16, and I was also testing how much I could squeeze inside the TITAN RTX GPU's 24 gigabytes of Video RAM memory for the purposes of 3D Image
 Segmentation.
 
 

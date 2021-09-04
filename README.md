@@ -20,30 +20,30 @@ Segmentation.
 
 ```
     usage: train_unet_segmentation_model.py [-h] --train_data_dir TRAIN_DATA_DIR
-                                            --val_data_dir VAL_DATA_DIR
-                                            [--model_architecture {upsampling_dropout,conv3dtranspose_dropout,upsampling_batchnormalization,conv3dtranspose_batchnormalization}]
-                                            [--unet_resize_factor UNET_RESIZE_FACTOR]
-                                            [--unet_dropout_rate UNET_DROPOUT_RATE]
-                                            --num_classes NUM_CLASSES
-                                            --num_channels NUM_CHANNELS
-                                            [--weighted_classes WEIGHTED_CLASSES]
-                                            [--train_multi_gpu TRAIN_MULTI_GPU]
-                                            [--num_gpus NUM_GPUS]
-                                            [--training_epochs TRAINING_EPOCHS]
-                                            [--model_path MODEL_PATH]
-                                            [--resume_train RESUME_TRAIN]
-                                            [--loss {dice,log_dice}]
-                                            [--optimizer {sgd,adam,nadam}]
-                                            [--lr LR]
-                                            [--use_nesterov_sgd USE_NESTEROV_SGD]
-                                            [--use_amsgrad_adam USE_AMSGRAD_ADAM]
-                                            [--train_batch_size TRAIN_BATCH_SIZE]
-                                            [--val_batch_size VAL_BATCH_SIZE]
-                                            [--mri_width MRI_WIDTH]
-                                            [--mri_height MRI_HEIGHT]
-                                            [--mri_depth MRI_DEPTH]
-                                            [--num_workers NUM_WORKERS]
-    
+                                        --val_data_dir VAL_DATA_DIR
+                                        [--model_architecture {upsampling_dropout,conv3dtranspose_dropout,upsampling_batchnormalization,conv3dtranspose_batchnormalization}]
+                                        [--unet_resize_factor UNET_RESIZE_FACTOR]
+                                        [--unet_dropout_rate UNET_DROPOUT_RATE]
+                                        --num_classes NUM_CLASSES
+                                        --num_channels NUM_CHANNELS
+                                        [--weighted_classes WEIGHTED_CLASSES]
+                                        [--train_multi_gpu TRAIN_MULTI_GPU]
+                                        [--num_gpus NUM_GPUS]
+                                        [--training_epochs TRAINING_EPOCHS]
+                                        [--model_path MODEL_PATH]
+                                        [--resume_train RESUME_TRAIN]
+                                        [--loss {dice,log_dice}]
+                                        [--optimizer {sgd,adam,nadam}]
+                                        [--lr LR]
+                                        [--use_nesterov_sgd USE_NESTEROV_SGD]
+                                        [--use_amsgrad_adam USE_AMSGRAD_ADAM]
+                                        [--train_batch_size TRAIN_BATCH_SIZE]
+                                        [--val_batch_size VAL_BATCH_SIZE]
+                                        [--mri_width MRI_WIDTH]
+                                        [--mri_height MRI_HEIGHT]
+                                        [--mri_depth MRI_DEPTH]
+                                        [--num_workers NUM_WORKERS]
+
     Training U-Net 3D image segmentation model.
     
     optional arguments:
@@ -115,9 +115,13 @@ Segmentation.
                             Use AMSGrad with adam optimizer: ('True', 'False')
                             (default: False)
       --train_batch_size TRAIN_BATCH_SIZE
-                            Batch size for train dataset datagenerator(default: 1)
+                            Batch size for train dataset datagenerator, if
+                            --train_multi_gpu then the minimum value must be the
+                            number of GPUs (default: 1)
       --val_batch_size VAL_BATCH_SIZE
-                            Batch size for val dataset datagenerator (default: 1)
+                            Batch size for validation dataset datagenerator, if
+                            --train_multi_gpu then the minimum value must be the
+                            number of GPUs (default: 1)
       --mri_width MRI_WIDTH
                             Input mri slice width (default: 240)
       --mri_height MRI_HEIGHT
@@ -130,7 +134,7 @@ Segmentation.
 ```
 
 ### Useful tools:
-* 3D MRI Scan viewer (supports nifti files): [link](https://socr.umich.edu/HTML5/BrainViewer/)
+* __SOCR 3D MRI Scan viewer__ (supports nifti files) for viewing the datasets' files in a nice GUI: [link](https://socr.umich.edu/HTML5/BrainViewer/)
 
 ### References:
 

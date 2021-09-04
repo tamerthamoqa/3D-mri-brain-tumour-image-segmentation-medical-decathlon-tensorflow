@@ -81,10 +81,10 @@ parser.add_argument('--use_amsgrad_adam', default=False, type=bool,
                     help="Use AMSGrad with adam optimizer: ('True', 'False') (default: False)"
                     )
 parser.add_argument('--train_batch_size', default=1, type=int,
-                    help="Batch size for train dataset datagenerator(default: 1)"
+                    help="Batch size for train dataset datagenerator, if --train_multi_gpu then the minimum value must be the number of GPUs (default: 1)"
                     )
 parser.add_argument('--val_batch_size', default=1, type=int,
-                    help="Batch size for val dataset datagenerator (default: 1)"
+                    help="Batch size for validation dataset datagenerator, if --train_multi_gpu then the minimum value must be the number of GPUs  (default: 1)"
                     )
 parser.add_argument('--mri_width', default=240, type=int,
                     help="Input mri slice width (default: 240)"

@@ -8,7 +8,7 @@ be terminated".
 
 Although I have explored the datasets' height, width, and depth statistics per each task in the 'misc/datasets_exploration_and_visualization' folder; I have manually set the model
 input shapes as according to my judgement since the 3D U-Net model needed input depth size that is a multiple of 16, and I was also testing how much I could squeeze inside the TITAN RTX GPU's 24 gigabytes of Video RAM memory for the purposes of 3D Image
-Segmentation.
+Segmentation. Also, training on some datasets did not do well with an initial learning rate value of 1e-4 and had to be increased for model training to improve.
 
 
 ### Medical Segmentation Decathlon datasets download links:

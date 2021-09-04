@@ -436,15 +436,6 @@ def main():
 
     print(model.summary())
 
-    reducelronplateau = ReduceLROnPlateau(
-        monitor="val_dice_coefficient",
-        factor=0.1,
-        patience=20,
-        verbose=1,
-        mode="max",
-        min_lr=1e-6
-    )
-
     if binary_training:
         print("\nTraining binary 3D U-Net {} segmentation model!".format(model_architecture))
     else:
@@ -455,14 +446,43 @@ def main():
     else:
         print("Training on Single-GPU mode!\n")
 
-    checkpoint = ModelCheckpoint(
-        filepath=model_path,
-        monitor='val_dice_coefficient',
-        verbose=1,
-        save_best_only=True,
-        save_weights_only=False,
-        mode='max'
-    )
+    if binary_training:
+        reducelronplateau = ReduceLROnPlateau(
+            monitor="val_dice_coefficient_binary",
+            factor=0.1,
+            patience=20,
+            verbose=1,
+            mode="max",
+            min_lr=1e-6
+        )
+
+        checkpoint = ModelCheckpoint(
+            filepath=model_path,
+            monitor='val_dice_coefficient_binary',
+            verbose=1,
+            save_best_only=True,
+            save_weights_only=False,
+            mode='max'
+        )
+
+    else:
+        reducelronplateau = ReduceLROnPlateau(
+            monitor="val_dice_coefficient",
+            factor=0.1,
+            patience=20,
+            verbose=1,
+            mode="max",
+            min_lr=1e-6
+        )
+
+        checkpoint = ModelCheckpoint(
+            filepath=model_path,
+            monitor='val_dice_coefficient',
+            verbose=1,
+            save_best_only=True,
+            save_weights_only=False,
+            mode='max'
+        )
 
     fit = model.fit(
         x=train_datagenerator,

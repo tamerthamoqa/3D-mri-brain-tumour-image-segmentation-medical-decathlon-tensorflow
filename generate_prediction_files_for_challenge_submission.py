@@ -100,6 +100,7 @@ def generate_model_prediction(model, mri, binary_mode):
 
     if binary_mode:  # binary segmentation -> sigmoid
         prediction = (prediction >= 0.5).astype(np.uint8)  # Apply "Sigmoid" function on predicted probabilities per voxel
+        prediction = prediction.reshape(prediction.shape[0], prediction.shape[1], prediction.shape[2])  # Remove extra channel dimension
     else:  # multiclass segmentation -> softmax
         prediction = np.argmax(prediction, axis=3).astype(np.uint8)
 
@@ -234,10 +235,12 @@ def generate_prediction_files_for_challenge_submission(model_path, model_loss, i
                 if original_file_layer_size < file_layer_size:
                     if len(mri.shape) == 4:  # file has multiple channels
                         temp_mri = np.zeros((image_height_size, image_width_size, file_layer_size, mri.shape[3]))
+                        temp_mri[:, :, :original_file_layer_size, :] = mri[:, :, :, :]
                     else:  # file has only one channel
                         temp_mri = np.zeros((image_height_size, image_width_size, file_layer_size, 1))
-
-                    temp_mri[:, :, :original_file_layer_size, :] = mri[:, :, :, :]
+                        # Reshaping to format suitable for binary 3D segmentation model
+                        mri_reshaped = mri.reshape((original_mri_image_height_size, original_mri_image_width_size, original_file_layer_size, 1))
+                        temp_mri[:, :, :original_file_layer_size, :] = mri_reshaped[:, :, :, :]
 
                     mri = temp_mri
                     prediction = generate_model_prediction(model=model, mri=mri, binary_mode=binary_mode)  # Returns type np.uint8
@@ -285,6 +288,10 @@ def generate_prediction_files_for_challenge_submission(model_path, model_loss, i
                         chunks = np.zeros((num_chunks, image_height_size, image_width_size, file_layer_size, mri.shape[3]))
                     else:  # file has only one channel
                         chunks = np.zeros((num_chunks, image_height_size, image_width_size, file_layer_size, 1))
+
+                    # Reshaping to format suitable for binary 3D segmentation model
+                    if binary_mode:
+                        mri = mri.reshape((mri.shape[0], mri.shape[1], mri.shape[2], 1))
 
                     # Split the file into chunks
                     for i in range(num_chunks):

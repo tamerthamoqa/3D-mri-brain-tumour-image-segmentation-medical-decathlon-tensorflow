@@ -260,6 +260,12 @@ def main():
         weighted_classes=weighted_classes
     )
 
+    # Set sample_weights parameter as train_datagenerator's sample_weights for validation set datagenerator
+    if weighted_classes:
+        val_sample_weights = train_datagenerator.sample_weights
+    else:
+        val_sample_weights = None
+
     val_datagenerator = DataGenerator(
         mri_paths=val_mri_paths,
         mask_paths=val_mask_paths,
@@ -273,7 +279,7 @@ def main():
         standardization=True,
         num_classes=num_classes,
         weighted_classes=weighted_classes,
-        sample_weights=train_datagenerator.sample_weights  # Set sample_weights parameter as train_datagenerator's sample_weights for validation set datagenerator
+        sample_weights=val_sample_weights
     )
 
     # Set GPU devices list for Tensorflow MirroredStrategy() 'devices' parameter for Multi-GPU training:

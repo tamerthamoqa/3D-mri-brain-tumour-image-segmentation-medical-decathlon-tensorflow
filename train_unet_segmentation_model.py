@@ -172,7 +172,8 @@ def set_optimizer(optimizer, learning_rate, use_nesterov_sgd, use_amsgrad_adam):
         optimizer = optimizers.SGD(
             lr=learning_rate,
             momentum=0.9,
-            nesterov=use_nesterov_sgd
+            nesterov=use_nesterov_sgd,
+            clipvalue=50  # For weighted class training yielding exploding gradients
         )
 
     elif optimizer == "adam":
@@ -187,7 +188,8 @@ def set_optimizer(optimizer, learning_rate, use_nesterov_sgd, use_amsgrad_adam):
             beta_1=0.9,
             beta_2=0.999,
             epsilon=0.1,
-            amsgrad=use_amsgrad_adam
+            amsgrad=use_amsgrad_adam,
+            clipvalue=50  # For weighted class training yielding exploding gradients
         )
 
     elif optimizer == "nadam":
@@ -202,7 +204,8 @@ def set_optimizer(optimizer, learning_rate, use_nesterov_sgd, use_amsgrad_adam):
             lr=learning_rate,
             beta_1=0.9,
             beta_2=0.999,
-            epsilon=0.1
+            epsilon=0.1,
+            clipvalue=50  # For weighted class training yielding exploding gradients
         )
 
     return optimizer

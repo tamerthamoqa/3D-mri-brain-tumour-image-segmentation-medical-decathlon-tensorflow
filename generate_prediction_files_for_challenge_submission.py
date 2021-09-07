@@ -238,8 +238,8 @@ def generate_prediction_files_for_challenge_submission(model_path, model_loss, i
                         temp_mri[:, :, :original_file_layer_size, :] = mri[:, :, :, :]
                     else:  # file has only one channel
                         temp_mri = np.zeros((image_height_size, image_width_size, file_layer_size, 1))
-                        # Reshaping to format suitable for binary 3D segmentation model
-                        mri_reshaped = mri.reshape((original_mri_image_height_size, original_mri_image_width_size, original_file_layer_size, 1))
+                        # Reshaping to suitable shape for model input
+                        mri_reshaped = mri.reshape((mri.shape[0], mri.shape[1], mri.shape[2], 1))
                         temp_mri[:, :, :original_file_layer_size, :] = mri_reshaped[:, :, :, :]
 
                     mri = temp_mri
@@ -288,9 +288,7 @@ def generate_prediction_files_for_challenge_submission(model_path, model_loss, i
                         chunks = np.zeros((num_chunks, image_height_size, image_width_size, file_layer_size, mri.shape[3]))
                     else:  # file has only one channel
                         chunks = np.zeros((num_chunks, image_height_size, image_width_size, file_layer_size, 1))
-
-                    # Reshaping to format suitable for binary 3D segmentation model
-                    if binary_mode:
+                        # Reshaping to suitable shape for model input
                         mri = mri.reshape((mri.shape[0], mri.shape[1], mri.shape[2], 1))
 
                     # Split the file into chunks

@@ -56,8 +56,8 @@ parser.add_argument('--train_multi_gpu', default=False, type=bool,
 parser.add_argument('--num_gpus', default=1, type=int,
                     help="Set number of available GPUs for multi-gpu training, '--train_multi_gpu' must be also set to True  (default: 1)"
                     )
-parser.add_argument('--training_epochs', default=200, type=int,
-                    help="Required training epochs (default: 200)"
+parser.add_argument('--training_epochs', default=250, type=int,
+                    help="Required training epochs (default: 250)"
                     )
 parser.add_argument('--model_path', default="unet_3d_segmentation_model.h5",  type=str,
                     help='Path to model checkpoint (default: "unet_3d_segmentation_model.h5")'
@@ -93,7 +93,7 @@ parser.add_argument('--mri_height', default=240, type=int,
                     help="Input mri slice height (default: 240)"
                     )
 parser.add_argument('--mri_depth', default=160, type=int,
-                    help="Input mri depth, must be a multiple of 16 for the unet model (default: 160)"
+                    help="Input mri depth, must be a multiple of 16 for the 3D U-Net model (default: 160)"
                     )
 parser.add_argument('--num_workers', default=4, type=int,
                     help="Number of workers for fit_generator (default: 4)"

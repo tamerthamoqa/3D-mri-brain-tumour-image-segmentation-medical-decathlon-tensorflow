@@ -5,6 +5,11 @@ import nibabel as nib
 import albumentations as A
 from tqdm import tqdm
 
+# TODO: Add a special case for resizing the Task04_Hippocampus data where both image and mask files would be inserted
+#  into the ALbumentations transform pipeline, as having two separate albumentations pipelines for the image and mask
+#  would yield slightly distorted masks
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--input_directory', type=str, required=True,
                     help="(Required) Path to dataset folder (must contain 'train/' and 'val/' subfolders with 'images' and 'masks' folders each)"

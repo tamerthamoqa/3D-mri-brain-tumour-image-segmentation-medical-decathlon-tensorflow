@@ -1,22 +1,111 @@
-# 3D-image-segmentation-medical-decathlon-tensorflow
-Code repository for training U-Net 3D image segmentation models using the [medical segmentation decathlon challenge](https://decathlon-10.grand-challenge.org/) datasets.
+# 3D-mri-brain-tumour-image-segmentation-medical-decathlon-tensorflow
+__Operating System__: Ubuntu 18.04 (you may face issues importing the packages from the requirements.yml file if your OS differs).
 
-This is __not meant as an official submission__ for the challenge since the challenge proposition describes that "teams cannot __manually__ tweak parameters of algorithms/models
+Code repository for training a brain tumour U-Net 3D image segmentation model using the 'Task01_BrainTumour' dataset from the  [medical segmentation decathlon challenge](https://decathlon-10.grand-challenge.org/) datasets.
+Experiments using the rest of the 9 datasets from the challenge may be conducted in the future.
+
+__Note__: This is __not meant as an official submission__ for the challenge since the challenge proposition describes that "teams __cannot manually__ tweak parameters of algorithms/models
 on a task specific basis. Any parameter tuning has to happen automatically and algorithmically. As an example, the learning rate or the depth of a network cannot be manually
 changed between tasks, but they can be found automatically through cross-validation. Any team which is found to use different human-defined and task-specific parameters will
-be terminated".
+be terminated". This repository uses __manual human-defined settings__ since the intetion is to explore image segmentation in a medical imaging context using the medical segmentation
+decathlon datasets rather than participating in the automatic training hyperparameter tuning challenge itself.
 
-Although I have explored the datasets' height, width, and depth statistics per each task in the 'misc/datasets_exploration_and_visualization' folder; I have manually set the model
-input shapes as according to my judgement since the 3D U-Net model needed input depth size that is a multiple of 16, and I was also testing how much I could squeeze inside the TITAN RTX GPU's 24 gigabytes of Video RAM memory for the purposes of 3D Image
-Segmentation. Also, training on some datasets did not do well with an initial learning rate value of 1e-4 and had to be increased for model training to improve.
-
+Please let me know if you find mistakes and errors, or improvement ideas for the code and for future training experiments. Feedback would be greatly appreciated as this is work in progress.
 
 ### Medical Segmentation Decathlon datasets download links:
 * [Official Google Drive link](https://goo.gl/QzVZcm)
 * [Academic Torrents](https://academictorrents.com/details/274be65156ed14828fb7b30b82407a2417e1924a)
+* [Medical Decathlon Datasets with my train/validation splits ](https://drive.google.com/file/d/15fHX4fOSYxbAiC5kk6bDkx-zcUAvfqFI/view?usp=sharing) (recommended for step 1 unless you would create the 'train' and 'val' folders with the 'images' and 'masks' subfolders yourself)
 
+### Task01 BrainTumour model prediction outputs
 
-### Training segmentation model
+__Task01 BrainTumour classes__:
+* __Class 0: Background__
+* __Class 1: Edema__
+* __Class 2: Non-Enhancing Tumour__
+* __Class 3: Enhancing Tumour__
+
+#### Validation set images
+![BRATS_389_slice_93 model prediction](visualizing_model_predictions/screenshots/Task01_BrainTumour_BRATS_389_prediction_slice_93.png "BRATS_389_slice_93 model prediction")
+![BRATS_390_slice_106 model prediction](visualizing_model_predictions/screenshots/Task01_BrainTumour_BRATS_390_prediction_slice_106.png "BRATS_390_slice_106 model prediction")
+![BRATS_391_slice_79 model prediction](visualizing_model_predictions/screenshots/Task01_BrainTumour_BRATS_391_prediction_slice_79.png "BRATS_391_slice_79 model prediction")
+![BRATS_392_slice_66 model prediction](visualizing_model_predictions/screenshots/Task01_BrainTumour_BRATS_392_prediction_slice_66.png "BRATS_392_slice_66 model prediction")
+
+#### Submission test images (no groundtruth masks available)
+![BRATS_488_slice_109 model prediction](visualizing_model_predictions/screenshots/Task01_BrainTumour_BRATS_488_prediction_slice_109.png "BRATS_488_slice_109 model prediction")
+![BRATS_490_slice_79 model prediction](visualizing_model_predictions/screenshots/Task01_BrainTumour_BRATS_490_prediction_slice_79.png "BRATS_490_slice_79 model prediction")
+
+### Task01 BrainTumor model training settings and test metric values
+__388 training files, 96 validation files__.
+
+* __--model_architecture__ conv3dtranspose_batchnormalization
+* __--unet_resize_factor__ 2
+* __--num_classes__ 4
+* __--num_channels__ 4
+* __--weighted_classes__ True
+* __--train_multi_gpu__ False
+* __--training_epochs__ 250
+* __--loss__ log_dice
+* __--optimizer__ adam
+* __--lr__ 0.0001 (with reduce LR on plateau by a factor of 0.1 with patience epochs=20)
+* __--use_amsgrad_adam__ False
+* __--train_batch_size__ 1
+* __--val_batch_size__ 1
+* __--mri_width__ 240
+* __--mri_height__ 240
+* __--mri_depth__ 160
+* __--num_workers__ 4
+
+Best performing epoch:
+    
+    Epoch 68/250
+    388/388 [==============================] - 1364s 4s/step - loss: 0.9651 - dice_coefficient: 0.8470 - iou: 0.9862 - accuracy: 0.9971 - val_loss: 1.4426 - val_dice_coefficient: 0.8154 - val_iou: 0.9852 - val_accuracy: 0.9964
+
+## Steps:
+### 1- Creating separate chunk files from the medical decathlon datasets with a specified image height, width and depth sizes
+```
+    usage: create_separate_chunk_files_from_dataset.py [-h] --input_directory
+                                                       INPUT_DIRECTORY
+                                                       --output_directory
+                                                       OUTPUT_DIRECTORY
+                                                       [--image_height_size IMAGE_HEIGHT_SIZE]
+                                                       [--image_width_size IMAGE_WIDTH_SIZE]
+                                                       [--file_layer_size FILE_LAYER_SIZE]
+                                                       [--use_last_chunk USE_LAST_CHUNK]
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+      --input_directory INPUT_DIRECTORY
+                            (Required) Path to dataset folder (must contain
+                            'train/' and 'val/' subfolders with 'images' and
+                            'masks' folders each)
+      --output_directory OUTPUT_DIRECTORY
+                            (Required) Path to output dataset folder that will
+                            contain the splitted files (must contain 'train/' and
+                            'val/' subfolders with 'images' and 'masks' folders
+                            each)
+      --image_height_size IMAGE_HEIGHT_SIZE
+                            Required image height size per file layer slice to be
+                            resized to in the output dataset image folder.
+                            Default: (240)
+      --image_width_size IMAGE_WIDTH_SIZE
+                            Required image width size per file layer slice to be
+                            resized to in the output dataset image folder.
+                            Default: (240)
+      --file_layer_size FILE_LAYER_SIZE
+                            Required file layer size per file chunk of an original
+                            file to in the output dataset image folder. Default:
+                            (160)
+      --use_last_chunk USE_LAST_CHUNK
+                            Whether to use the last file chunk of the original
+                            file that would be split into
+                            "ceil(original_file_layer_size / file_layer_size)
+                            files". If True: the last chunk will be used and the
+                            rest of the layers would be padded with zeros.
+                            Default: (True)
+```
+
+### 2- Training 3D image segmentation model
 
 ```
     usage: train_unet_segmentation_model.py [-h] --train_data_dir TRAIN_DATA_DIR
@@ -93,7 +182,7 @@ Segmentation. Also, training on some datasets did not do well with an initial le
                             --train_multi_gpu' must be also set to True (default:
                             1)
       --training_epochs TRAINING_EPOCHS
-                            Required training epochs (default: 200)
+                            Required training epochs (default: 250)
       --model_path MODEL_PATH
                             Path to model checkpoint (default:
                             "unet_3d_segmentation_model.h5")
@@ -127,10 +216,54 @@ Segmentation. Also, training on some datasets did not do well with an initial le
       --mri_height MRI_HEIGHT
                             Input mri slice height (default: 240)
       --mri_depth MRI_DEPTH
-                            Input mri depth, must be a multiple of 16 for the unet
-                            model (default: 160)
+                            Input mri depth, must be a multiple of 16 for the 3D
+                            U-Net model (default: 160)
       --num_workers NUM_WORKERS
                             Number of workers for fit_generator (default: 4)
+```
+
+### 3- Creating prediction submission files for the challenge 
+__Note__: The submission instructions [link](https://decathlon-10.grand-challenge.org/evaluation/challenge/submissions/create/)
+
+```
+    usage: generate_prediction_files_for_challenge_submission.py
+           [-h] --model_path MODEL_PATH [--model_loss {dice,log_dice}]
+           --input_directory INPUT_DIRECTORY --output_directory OUTPUT_DIRECTORY
+           [--image_height_size IMAGE_HEIGHT_SIZE]
+           [--image_width_size IMAGE_WIDTH_SIZE]
+           [--file_layer_size FILE_LAYER_SIZE] --num_classes NUM_CLASSES
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+      --model_path MODEL_PATH
+                            (Required) Path to trained model (.h5 file)
+      --model_loss {dice,log_dice}
+                            Segmentation loss function the segmentation model was
+                            trained with: ('dice','log_dice'), (default:
+                            'log_dice')
+      --input_directory INPUT_DIRECTORY
+                            (Required) Path to image folder containing the test
+                            images to generate the predictions from ('ImagesTs'
+                            folder in the original datasets')
+      --output_directory OUTPUT_DIRECTORY
+                            (Required) Path to output dataset folder that will
+                            contain the model predictions
+      --image_height_size IMAGE_HEIGHT_SIZE
+                            Required image height size for model input. Default:
+                            (240)
+      --image_width_size IMAGE_WIDTH_SIZE
+                            Required image width size for model input. Default:
+                            (240)
+      --file_layer_size FILE_LAYER_SIZE
+                            Required file layer size for model input. Default:
+                            (160)
+      --num_classes NUM_CLASSES
+                            (Required) Number of classes in dataset:
+                            (Task01_BrainTumour: 4, Task02_Heart: 2, Task03_Liver:
+                            3, Task04_Hippocampus: 3, Task05_Prostate: 3,
+                            Task06_Lung: 2, Task07_Pancreas: 3,
+                            Task08_HepaticVessel: 3, Task09_Spleen: 2,
+                            Task10_Colon: 2)
 ```
 
 ### Useful tools:

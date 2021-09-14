@@ -177,12 +177,6 @@ def set_optimizer(optimizer, learning_rate, use_nesterov_sgd, use_amsgrad_adam):
         )
 
     elif optimizer == "adam":
-        # According to the notes here: https://keras.io/api/optimizers/adam/
-        #  the default value of 1e-7 for epsilon might not be a good default in general
-        #  for example, when training an inception network on ImageNet a current good
-        #  choice is 1.0 or 0.1
-        #  Since the Inception-ResNet-V2 model is being used for experiments, I decided
-        #   to change epsilon from 1e-7 to 0.1
         optimizer = optimizers.Adam(
             lr=learning_rate,
             beta_1=0.9,
@@ -193,13 +187,6 @@ def set_optimizer(optimizer, learning_rate, use_nesterov_sgd, use_amsgrad_adam):
         )
 
     elif optimizer == "nadam":
-        # According to the notes here: https://keras.io/api/optimizers/adam/
-        #  the default value of 1e-7 for epsilon might not be a good default in general
-        #  for example, when training an inception network on ImageNet a current good
-        #  choice is 1.0 or 0.1
-        #  Since the Inception-ResNet-V2 model is being used for experiments, I decided
-        #   to change epsilon from 1e-7 to 0.1, I am assuming the Nesterov momentum won't
-        #   be affected by the increased epsilon value
         optimizer = optimizers.Nadam(
             lr=learning_rate,
             beta_1=0.9,

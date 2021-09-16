@@ -272,6 +272,8 @@ __Note__: The submission instructions [link](https://decathlon-10.grand-challeng
 ### References:
 
 * Simpson, A., Antonelli, M., Bakas, S., Bilello, M., Farahani, K., Ginneken, B., Kopp-Schneider, A., Landman, B., Litjens, G., Menze, B., Ronneberger, O., Summers, R., Bilic, P., Christ, P., Do, R., Gollub, M., Golia-Pernicka, J., Heckers, S., Jarnagin, W., McHugo, M., Napel, S., Vorontsov, E., Maier-Hein, L., & Cardoso, M.J. (2019). A large annotated medical image dataset for the development and evaluation of segmentation algorithms. ArXiv, abs/1902.09063. [link](https://arxiv.org/abs/1902.09063)
+* Antonelli, M., Reinke, A., Bakas, S., Farahani, K., AnnetteKopp-Schneider, Landman, B., Litjens, G., Menze, B., Ronneberger, O., M.Summers, R., Ginneken, B., Bilello, M., Bilic, P., Christ, P., Do, R.K., Gollub, M., Heckers, S., Huisman, H., Jarnagin, W., McHugo, M., Napel, S., Pernicka, J.S., Rhode, K., Tobon-Gomez, C., Vorontsov, E., Meakin, J., Ourselin, S., Wiesenfarth, M., Arbeláez, P., Bae, B., Chen, S., Daza, L., Feng, J., He, B., Isensee, F., Ji, Y., Jia, F., Kim, N., Kim, I., Merhof, D., Pai, A., Park, B., Perslev, M., Rezaiifar, R., Rippel, O., Sarasua, I., Shen, W., Son, J., Wachinger, C., Wang, L., Wang, Y., Xia, Y., Xu, D., Xu, Z., Zheng, Y., Simpson, A.L., Maier-Hein, L., & Cardoso, M. (2021). The Medical Segmentation Decathlon. ArXiv, abs/2106.05735. [link](https://arxiv.org/abs/2106.05735)
+
 
 ### Hardware Specifications
 * TITAN RTX Graphics Card (24 gigabytes Video RAM).
